@@ -25,9 +25,9 @@ class DiaphragmatixApp extends StatelessWidget {
               return _fade(const HomeScreen());
             case '/session':
               final day = settings.arguments as int? ?? 1;
-              return _fade(SessionScreen(dayNumber: day));
+              return _zoomScale(SessionScreen(dayNumber: day));
             case '/progress':
-              return _fade(const ProgressScreen());
+              return _slideUp(const ProgressScreen());
             default:
               return _fade(const _AppRoot());
           }
@@ -41,6 +41,35 @@ class DiaphragmatixApp extends StatelessWidget {
         transitionsBuilder: (_, anim, secondary, child) =>
             FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 400),
+      );
+
+  PageRoute _zoomScale(Widget page) => PageRouteBuilder(
+        pageBuilder: (ctx, anim, sec) => page,
+        transitionsBuilder: (ctx, anim, sec, child) {
+          final curved =
+              CurvedAnimation(parent: anim, curve: Curves.easeInOutCubic);
+          return ScaleTransition(
+            scale: Tween<double>(begin: 0.90, end: 1.0).animate(curved),
+            child: FadeTransition(opacity: curved, child: child),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 500),
+      );
+
+  PageRoute _slideUp(Widget page) => PageRouteBuilder(
+        pageBuilder: (ctx, anim, sec) => page,
+        transitionsBuilder: (ctx, anim, sec, child) {
+          final curved =
+              CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.06),
+              end: Offset.zero,
+            ).animate(curved),
+            child: FadeTransition(opacity: curved, child: child),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 380),
       );
 }
 
